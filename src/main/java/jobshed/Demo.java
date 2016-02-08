@@ -8,26 +8,26 @@ public class Demo {
     private static Logger log = LoggerFactory.getLogger(Demo.class);
 
 	public static void main(String[] args) {
-		Manager manager = new Manager();
+		Manager<String> manager = new Manager<>();
 
 		
 		//create some grandchild tasks
-		Task aaa = TaskLabelled.create("Aaa", 1.0f);
-		Task aab = TaskLabelled.create("Aab", 1.0f);
+		Task<String> aaa = Task.create("Aaa", 1.0f);
+		Task<String> aab = Task.create("Aab", 1.0f);
 		
 		//create some child tasks
-		Task aa = TaskLabelled.create("Aa", 1.0f, aaa, aab);
-		Task ab = TaskLabelled.create("Ab", 1.0f);
-		Task ac = TaskLabelled.create("Ac", 1.0f);
+		Task<String> aa = Task.create("Aa", 1.0f, aaa, aab);
+		Task<String> ab = Task.create("Ab", 1.0f);
+		Task<String> ac = Task.create("Ac", 1.0f);
 
-		Task ba = TaskLabelled.create("Ba", 1.0f);
-		Task bb = TaskLabelled.create("Bb", 1.0f);
-		Task bc = TaskLabelled.create("Bc", 1.0f);
+		Task<String> ba = Task.create("Ba", 1.0f);
+		Task<String> bb = Task.create("Bb", 1.0f);
+		Task<String> bc = Task.create("Bc", 1.0f);
 		
 		//create some tasks
-		Task a = TaskLabelled.create("A", 1.0f, aa, ab, ac);
-		Task b = TaskLabelled.create("B", 1.0f, ba, bb, bc);
-		Task c = TaskLabelled.create("C", 1.0f);
+		Task<String> a = Task.create("A", 1.0f, aa, ab, ac);
+		Task<String> b = Task.create("B", 1.0f, ba, bb, bc);
+		Task<String> c = Task.create("C", 1.0f);
 		
 		log.info("Created tasks");		
 		
@@ -37,7 +37,7 @@ public class Demo {
 
 		log.info("Added tasks");
 		
-		Agent agent = new Agent();
+		Agent<String> agent = new Agent<String>();
 		manager.add(agent);
 		
 		log.info("Created agent(s)");

@@ -10,23 +10,28 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
 
-public class Manager {	
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class Manager<T> {	
 	
-	protected final Comparator<Task> costComparator = new Comparator<Task>() {
+	protected final Comparator<Task<T>> costComparator = new Comparator<Task<T>>() {
 		@Override
-		public int compare(Task t0, Task t1) {
+		public int compare(Task<T> t0, Task<T> t1) {
 			return Float.compare(t0.getTotalCost(), t1.getTotalCost());
 		}
 	};
-	protected final Queue<Task> tasks = new PriorityQueue<>(costComparator);
+	protected final Queue<Task<T>> tasks = new PriorityQueue<>(costComparator);
 	
-	protected final Set<Agent> agents = new HashSet<>();
-	
+	protected final Set<Agent<T>> agents = new HashSet<>();
+
+    private static Logger log = LoggerFactory.getLogger(Manager.class);
+    
 	public Manager() {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public void add(Task t) {
+	public void add(Task<T> t) {
 		if (t.hasParent()) throw new IllegalArgumentException("Can only add top tier tasks to manager");
 		tasks.add(t);
 	}
@@ -36,7 +41,7 @@ public class Manager {
 	 * 
 	 * @return 
 	 */
-	public Task peek() {
+	public Task<T> peek() {
 		return tasks.peek();
 	}
 	
@@ -45,16 +50,16 @@ public class Manager {
 	 * 
 	 * @return 
 	 */
-	public Task poll() {
+	public Task<T> poll() {
 		return tasks.poll();
 	}
 	
-	public void remove(Task t) {
-		if (t.hasParent()) {
-			t.parent.removeChild(t);
+	public void remove(Task<T> task) {
+		if (task.hasParent()) {
+			task.parent.removeChild(task);
 		} else {
-			if (tasks.contains(t)) {
-				tasks.remove(t);
+			if (tasks.contains(task)) {
+				tasks.remove(task);
 			} else {
 				throw new IllegalArgumentException("Attempting to complete task that is not present");
 			}
@@ -62,13 +67,13 @@ public class Manager {
 	}
 
 	
-	public void add(Agent a) {
+	public void add(Agent<T> a) {
 		agents.add(a);
 	}
 	
-	private class AvaliableTaskIterator implements Iterator<Task> {
+	public class AvaliableTaskIterator implements Iterator<Task<T>> {
 		
-		private List<Iterator<Task>> listOfIterators = new ArrayList<>();
+		private List<Iterator<Task<T>>> listOfIterators = new ArrayList<>();
 		
 		public AvaliableTaskIterator() {
 			listOfIterators.add(tasks.iterator());
@@ -92,16 +97,15 @@ public class Manager {
 		}
 
 		@Override
-		public Task next() {
+		public Task<T> next() {
 			if (listOfIterators.size() == 0) {
 				throw new NoSuchElementException();
 			}
 			if (!hasNext()) {
 				throw new NoSuchElementException();
 			}
-			Iterator<Task> lastIterator = listOfIterators.get(listOfIterators.size()-1);
 			
-			Task next = lastIterator.next();
+			Task<T> next =  listOfIterators.get(listOfIterators.size()-1).next();
 			
 			if (next.children.size() > 0) {
 				listOfIterators.add(next.children.iterator());
@@ -113,7 +117,7 @@ public class Manager {
 		
 	}
 	
-	public Iterator<Task> getAvaliableTasks() {
+	public Iterator<Task<T>> getAvaliableTasks() {
 		return new AvaliableTaskIterator();
 	}
 	
@@ -122,10 +126,10 @@ public class Manager {
 	 * Handles assigning tasks to agents, starting with tasks that have the lowest cost and no children
 	 */
 	public void assign() {
-		for (Agent agent: agents) {
-			Iterator<Task> taskIterator = getAvaliableTasks();
+		for (Agent<T> agent: agents) {
+			Iterator<Task<T>> taskIterator = getAvaliableTasks();
 			while (taskIterator.hasNext()) {
-				Task t = taskIterator.next();
+				Task<T> t = taskIterator.next();
 				if (!t.isAssigned()) {
 					t.setAssignedTo(agent);
 					break; //end task loop, go to next agent
