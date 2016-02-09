@@ -1,14 +1,14 @@
 package jobshed;
 
-public class Agent<T> {
+public class Agent {
 	
-	protected Task<T> currentTask = null;
+	protected Task<?> currentTask = null;
 
-	public Task<T> getCurrentTask() {
+	public Task<?> getCurrentTask() {
 		return currentTask;
 	}
 
-	public void setCurrentTask(Task<T> task) {
+	public void setCurrentTask(Task<?> task) {
 		if (task != null && task.isAssigned() && task.getAssignedTo() != this) {
 			throw new IllegalArgumentException("Cannot work on assigned task");
 		}

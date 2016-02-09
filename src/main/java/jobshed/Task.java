@@ -1,17 +1,19 @@
 package jobshed;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
 public class Task<T> {
 
-	protected Task<T> parent = null;
-	protected final Set<Task<T>> children = new HashSet<>();
+	protected Task<?> parent = null;
+	protected final Set<Task<?>> children = new HashSet<>(); 
 	protected final float cost;
-	protected Agent<T> assignedTo;
+	protected Agent assignedTo;
 	private final T content;
 		
 	protected Task(T content, float cost, Set<Task<T>> children) {
@@ -22,7 +24,7 @@ public class Task<T> {
 		}
 	}
 
-	public Agent<T> getAssignedTo() {
+	public Agent getAssignedTo() {
 		return assignedTo;
 	}
 	
@@ -30,7 +32,7 @@ public class Task<T> {
 		return content;
 	}
 
-	public void setAssignedTo(Agent<T> agent) {
+	public void setAssignedTo(Agent agent) {
 		if (agent.hasCurrentTask() && agent.getCurrentTask() != this) {
 			throw new IllegalArgumentException("Cannot assign to working agent");
 		}
@@ -56,13 +58,13 @@ public class Task<T> {
 		}
 	}
 	
-	public Set<Task<T>> getChildren() {
+	public Set<Task<?>> getChildren() {
 		return Collections.unmodifiableSet(children);
 	}
 
 	public void setParent(Task<T> t) {
 		if (this.parent != null) {
-			throw new IllegalArgumentException("Attempt to set already existing parent");
+			throw new IllegalArgumentException("Attempt to set already existing parent ("+t+") in "+this);
 		}
 		//TODO check for loops
 		this.parent = t;
@@ -74,7 +76,7 @@ public class Task<T> {
 	
 	public float getTotalCost() {
 		float total = cost;
-		for (Task<T> t : children) {
+		for (Task<?> t : children) {
 			total += t.getTotalCost();
 		}
 		return total;
@@ -100,23 +102,24 @@ public class Task<T> {
 	
 	@Override
     public int hashCode() {
-		return Objects.hash(content, children, cost);
+		//cannot hash on children because it may change
+		return Objects.hash(content, cost);
 	}
 	
 	public String toString() {
 		String str = "Task("+content+", "+cost;
-		for (Task<T> task : children) {	
+		for (Task<?> task : children) {	
 			str = str+", "+task;
 		}
 		str = str+")";
 		return str;
 	}
 
-	public void removeChild(Task<T> t) {
-		if (children.contains(t)) {
-			children.remove(t);
+	public void removeChild(Task<?> task) {
+		if (children.contains(task)) {
+			children.remove(task);
 		} else {
-			throw new IllegalArgumentException("Attempting to remove non-child task");
+			throw new IllegalArgumentException("Attempting to remove non-child task ("+task+") from "+this);
 		}
 	}
 	

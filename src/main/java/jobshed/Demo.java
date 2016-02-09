@@ -8,7 +8,7 @@ public class Demo {
     private static Logger log = LoggerFactory.getLogger(Demo.class);
 
 	public static void main(String[] args) {
-		Manager<String> manager = new Manager<>();
+		Manager manager = new Manager();
 
 		
 		//create some grandchild tasks
@@ -37,7 +37,7 @@ public class Demo {
 
 		log.info("Added tasks");
 		
-		Agent<String> agent = new Agent<String>();
+		Agent agent = new Agent();
 		manager.add(agent);
 		
 		log.info("Created agent(s)");

@@ -15,7 +15,7 @@ public class TaskTest {
 	
 	@Test
 	public void testIterator() {
-		Manager<String> manager = new Manager<>();
+		Manager manager = new Manager();
 		
 		//create some child tasks
 		Task<String> aa = Task.create("Aa", 1.0f);
@@ -26,12 +26,12 @@ public class TaskTest {
 
 		manager.add(a);
 		
-		Iterator<Task<String>> taskIterator = manager.getAvaliableTasks();
+		Iterator<Task<?>> taskIterator = manager.getAvaliableTasks();
 		
-		List<Task<String>> taskList = new ArrayList<>();
+		List<Task<?>> taskList = new ArrayList<>();
 		while (taskIterator.hasNext()) {
 			log.info("fum");
-			Task<String> task = taskIterator.next();
+			Task<?> task = taskIterator.next();
 			log.info("Next task is: "+task);
 			taskList.add(task);
 		}
